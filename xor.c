@@ -24,7 +24,13 @@ void encryptFile(const char* filename, const char* message, const char* key) {
 void decryptFile(const char* filename, const char* key) {
     FILE* file = fopen(filename, "rb");
     if (!file) {
-        printf("Error opening file for reading.\n");
+        printf("Error: could not open \"%s\".\n", filename);
+        return;
+    }
+    long fileSize = ftell(file);
+    if (fileSize <= 0) {
+        printf("Error: file is empty or unreadable.\n");
+        fclose(file);
         return;
     }
 
