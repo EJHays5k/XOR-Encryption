@@ -1,8 +1,10 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 void xorEncrypt(char* message, char* key) {
     int keyLen = strlen(key);
+    if (keyLen == 0) return;
     for (int i = 0; message[i] != '\0'; i++) {
         message[i] ^= key[i % keyLen];
     }
@@ -27,15 +29,14 @@ void decryptFile(const char* filename, const char* key) {
         printf("Error: could not open \"%s\".\n", filename);
         return;
     }
+
+    fseek(file, 0, SEEK_END);
     long fileSize = ftell(file);
     if (fileSize <= 0) {
         printf("Error: file is empty or unreadable.\n");
         fclose(file);
         return;
     }
-
-    fseek(file, 0, SEEK_END);
-    long fileSize = ftell(file);
     fseek(file, 0, SEEK_SET);
 
     char* buffer = (char*)malloc(fileSize + 1);
@@ -84,10 +85,13 @@ int main() {
         fgets(filename, sizeof(filename), stdin);
         filename[strcspn(filename, "\n")] = '\0';
 
-        printf("Enter the encryption key: ");
-        fflush(stdout);
-        fgets(key, sizeof(key), stdin);
-        key[strcspn(key, "\n")] = '\0';
+        do {
+            printf("Enter the encryption key: ");   // "decryption" in the 'd' branch
+            fflush(stdout);
+            fgets(key, sizeof(key), stdin);
+            key[strcspn(key, "\r\n")] = '\0';
+            if (key[0] == '\0') printf("Key cannot be empty.\n");
+        } while (key[0] == '\0');
 
         encryptFile(filename, message, key);
     }
@@ -100,10 +104,13 @@ int main() {
         fgets(filename, sizeof(filename), stdin);
         filename[strcspn(filename, "\n")] = '\0';
 
-        printf("Enter the decryption key: ");
-        fflush(stdout);
-        fgets(key, sizeof(key), stdin);
-        key[strcspn(key, "\n")] = '\0';
+        do {
+            printf("Enter the encryption key: ");   // "decryption" in the 'd' branch
+            fflush(stdout);
+            fgets(key, sizeof(key), stdin);
+            key[strcspn(key, "\r\n")] = '\0';
+            if (key[0] == '\0') printf("Key cannot be empty.\n");
+        } while (key[0] == '\0');
 
         decryptFile(filename, key);
     }
