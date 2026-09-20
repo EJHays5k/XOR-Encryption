@@ -75,10 +75,13 @@ int main() {
         char filename[256];
         char key[256];
 
-        printf("Enter the message to encrypt: ");
-        fflush(stdout);
-        fgets(message, sizeof(message), stdin);
-        message[strcspn(message, "\n")] = '\0';
+        do {
+            printf("Enter the message to encrypt: ");
+            fflush(stdout);
+            if (fgets(message, sizeof(message), stdin) == NULL) return 1;
+            message[strcspn(message, "\r\n")] = '\0';
+            if (message[0] == '\0') printf("Message cannot be empty.\n");
+        } while (message[0] == '\0');
 
         printf("Enter the filename to save encrypted data: ");
         fflush(stdout);
